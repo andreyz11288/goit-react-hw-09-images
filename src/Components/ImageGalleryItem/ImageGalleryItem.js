@@ -17,8 +17,6 @@ export default function ImageGalleryItem({
   const [status, setStatus] = useState('idle');
   const [number, setNumber] = useState(null);
 
-  // let thisPage = numberPage + 1;
-
   useEffect(() => {
     if (onFetch === '') {
       setStatus('idle');

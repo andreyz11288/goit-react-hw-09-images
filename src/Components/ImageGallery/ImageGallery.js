@@ -13,14 +13,7 @@ const ImageGallery = ({ src, onFetch }) => {
   };
 
   const visibl = length => {
-    // if (length) {
-    //   if (visible) {
-    //     setVisible(false);
-    //   }
-    // }
-    // if (!length) {
     setVisible(!length);
-    // }
   };
 
   const pageNumber = e => {

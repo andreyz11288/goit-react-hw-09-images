@@ -18,9 +18,6 @@ export default function Modal({ src }) {
         if (e.target.alt !== 'img') {
           setModal(false);
         }
-        // if (e.target.alt === 'img') {
-        //   setModal(true);
-        // }
       });
     }
     return () => {
