@@ -13,14 +13,14 @@ const ImageGallery = ({ src, onFetch }) => {
   };
 
   const visibl = length => {
-    if (length) {
-      if (visible) {
-        setVisible(false);
-      }
-    }
-    if (!length) {
-      setVisible(true);
-    }
+    // if (length) {
+    //   if (visible) {
+    //     setVisible(false);
+    //   }
+    // }
+    // if (!length) {
+    setVisible(!length);
+    // }
   };
 
   const pageNumber = e => {
@@ -42,6 +42,7 @@ const ImageGallery = ({ src, onFetch }) => {
           visible={visibl}
           numberPage={page}
           resPage={resPage}
+          qq={visible}
         />
       </ul>
       {visible && <Button pageNumber={pageNumber} />}

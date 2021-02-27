@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 
 import s from './ImageGalleryItem.module.css';
 import Loaders from '../Loader/Loader';
@@ -13,10 +13,11 @@ export default function ImageGalleryItem({
   largeImageURL,
 }) {
   const [gallery, setGallery] = useState([]);
-  // const [fetch, setFetch] = useState('q1az');
+  const [fetch, setFetch] = useState(null);
   const [status, setStatus] = useState('idle');
+  const [number, setNumber] = useState(null);
 
-  // let thisPage = 1;
+  // let thisPage = numberPage + 1;
 
   useEffect(() => {
     if (onFetch === '') {
@@ -25,8 +26,12 @@ export default function ImageGalleryItem({
     }
   }, [onFetch, visible]);
 
-  const firstRender = useCallback(() => {
-    if (onFetch !== '') {
+  useEffect(() => {
+    setFetch(true);
+  }, [onFetch]);
+
+  useEffect(() => {
+    if (onFetch !== '' && fetch) {
       setGallery([]);
       setStatus('pending');
       visible(true);
@@ -42,71 +47,30 @@ export default function ImageGalleryItem({
           }
           setStatus('resolve');
         })
-        .catch(() => setStatus('rejected'));
+        .catch(() => setStatus('rejected'))
+        .finally(setFetch(false), setNumber(2));
     }
-  }, [onFetch, resPage, visible]);
+  }, [fetch, gallery, onFetch, resPage, visible]);
 
   useEffect(() => {
-    firstRender();
-    // if (onFetch !== '' && fetch !== onFetch) {
-    //   setGallery([]);
-    //   setStatus('pending');
-    //   visible(true);
-    //   resPage(true);
-    //   Api(onFetch, 1)
-    //     .then(e => {
-    //       console.log(e.hits);
-    //       setGallery(e.hits);
-    //       visible(false);
-    //       if (e.hits.length === 0) {
-    //         visible(true);
-    //         return setStatus('rejected');
-    //       }
-    //       setStatus('resolve');
-    //     })
-    //     .catch(() => setStatus('rejected'));
-    // }
-  }, [onFetch]);
-
-  const pagination = useCallback(() => {
-    Api(onFetch, numberPage)
-      .then(e => {
-        setGallery([...gallery, ...e.hits]);
-        window.scrollTo({
-          top: document.documentElement.scrollHeight,
-          behavior: 'smooth',
-        });
-        visible(false);
-        if (e.hits.length === 0) {
-          visible(true);
-        }
-        setStatus('resolve');
-      })
-      .catch(() => setStatus('rejected'));
-    // }
-    // setFetch(onFetch);
-  }, [gallery, numberPage, onFetch, visible]);
-
-  useEffect(() => {
-    pagination();
-    // if ((1 < numberPage && fetch === 'q1az') || fetch === onFetch) {
-    // Api(onFetch, numberPage)
-    //   .then(e => {
-    //     setGallery([...gallery, ...e.hits]);
-    //     window.scrollTo({
-    //       top: document.documentElement.scrollHeight,
-    //       behavior: 'smooth',
-    //     });
-    //     visible(false);
-    //     if (e.hits.length === 0) {
-    //       visible(true);
-    //     }
-    //     setStatus('resolve');
-    //   })
-    //   .catch(() => setStatus('rejected'));
-    // // }
-    // setFetch(onFetch);
-  }, [numberPage]);
+    if (number === numberPage) {
+      Api(onFetch, numberPage)
+        .then(e => {
+          setGallery([...gallery, ...e.hits]);
+          window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'smooth',
+          });
+          visible(false);
+          if (e.hits.length === 0) {
+            visible(true);
+          }
+          setStatus('resolve');
+        })
+        .catch(() => setStatus('rejected'))
+        .finally(setNumber(number + 1));
+    }
+  }, [gallery, number, numberPage, onFetch, visible]);
 
   if (status === 'idle') {
     return (
