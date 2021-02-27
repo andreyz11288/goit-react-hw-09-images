@@ -9,32 +9,31 @@ export default function Modal({ src }) {
   useEffect(() => {
     if (src !== '') {
       setModal(true);
+      window.addEventListener('keydown', e => {
+        if (e.code === 'Escape') {
+          setModal(false);
+        }
+      });
+      window.addEventListener('click', e => {
+        if (e.target.alt !== 'img') {
+          setModal(false);
+        }
+        // if (e.target.alt === 'img') {
+        //   setModal(true);
+        // }
+      });
     }
-    window.addEventListener('keydown', e => {
-      if (e.code === 'Escape') {
-        setModal(false);
-      }
-    });
-    window.addEventListener('click', e => {
-      if (e.target.alt !== 'img') {
-        setModal(false);
-      }
-      if (e.target.alt === 'img') {
-        setModal(true);
-      }
-    });
+    return () => {
+      window.removeEventListener('click', e => {
+        if (e.target.alt !== 'img') {
+          setModal(false);
+        }
+        if (e.target.alt === 'img') {
+          setModal(true);
+        }
+      });
+    };
   }, [src]);
-
-  useEffect(() => {
-    window.removeEventListener('keydown', e => {
-      if (e.target.alt !== 'img') {
-        setModal(false);
-      }
-      if (e.target.alt === 'img') {
-        setModal(true);
-      }
-    });
-  }, []);
 
   return (
     modal && (

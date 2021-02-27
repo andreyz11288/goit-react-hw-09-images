@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 import s from './ImageGalleryItem.module.css';
 import Loaders from '../Loader/Loader';
@@ -13,22 +13,25 @@ export default function ImageGalleryItem({
   largeImageURL,
 }) {
   const [gallery, setGallery] = useState([]);
-  const [fetch, setFetch] = useState('q1az');
+  // const [fetch, setFetch] = useState('q1az');
   const [status, setStatus] = useState('idle');
 
+  // let thisPage = 1;
+
   useEffect(() => {
-    let thisPage = 1;
     if (onFetch === '') {
       setStatus('idle');
       visible(true);
     }
+  }, [onFetch, visible]);
 
-    if (onFetch !== '' && fetch !== onFetch) {
+  const firstRender = useCallback(() => {
+    if (onFetch !== '') {
       setGallery([]);
       setStatus('pending');
       visible(true);
       resPage(true);
-      Api(onFetch, thisPage)
+      Api(onFetch, 1)
         .then(e => {
           console.log(e.hits);
           setGallery(e.hits);
@@ -41,24 +44,69 @@ export default function ImageGalleryItem({
         })
         .catch(() => setStatus('rejected'));
     }
-    if ((1 < numberPage && fetch === 'q1az') || fetch === onFetch) {
-      Api(onFetch, numberPage)
-        .then(e => {
-          setGallery([...gallery, ...e.hits]);
-          window.scrollTo({
-            top: document.documentElement.scrollHeight,
-            behavior: 'smooth',
-          });
-          visible(false);
-          if (e.hits.length === 0) {
-            visible(true);
-          }
-          setStatus('resolve');
-        })
-        .catch(() => setStatus('rejected'));
-    }
-    setFetch(onFetch);
-  }, [onFetch, numberPage]);
+  }, [onFetch, resPage, visible]);
+
+  useEffect(() => {
+    firstRender();
+    // if (onFetch !== '' && fetch !== onFetch) {
+    //   setGallery([]);
+    //   setStatus('pending');
+    //   visible(true);
+    //   resPage(true);
+    //   Api(onFetch, 1)
+    //     .then(e => {
+    //       console.log(e.hits);
+    //       setGallery(e.hits);
+    //       visible(false);
+    //       if (e.hits.length === 0) {
+    //         visible(true);
+    //         return setStatus('rejected');
+    //       }
+    //       setStatus('resolve');
+    //     })
+    //     .catch(() => setStatus('rejected'));
+    // }
+  }, [onFetch]);
+
+  const pagination = useCallback(() => {
+    Api(onFetch, numberPage)
+      .then(e => {
+        setGallery([...gallery, ...e.hits]);
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: 'smooth',
+        });
+        visible(false);
+        if (e.hits.length === 0) {
+          visible(true);
+        }
+        setStatus('resolve');
+      })
+      .catch(() => setStatus('rejected'));
+    // }
+    // setFetch(onFetch);
+  }, [gallery, numberPage, onFetch, visible]);
+
+  useEffect(() => {
+    pagination();
+    // if ((1 < numberPage && fetch === 'q1az') || fetch === onFetch) {
+    // Api(onFetch, numberPage)
+    //   .then(e => {
+    //     setGallery([...gallery, ...e.hits]);
+    //     window.scrollTo({
+    //       top: document.documentElement.scrollHeight,
+    //       behavior: 'smooth',
+    //     });
+    //     visible(false);
+    //     if (e.hits.length === 0) {
+    //       visible(true);
+    //     }
+    //     setStatus('resolve');
+    //   })
+    //   .catch(() => setStatus('rejected'));
+    // // }
+    // setFetch(onFetch);
+  }, [numberPage]);
 
   if (status === 'idle') {
     return (
