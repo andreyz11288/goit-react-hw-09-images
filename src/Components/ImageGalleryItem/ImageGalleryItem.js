@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+
 import s from './ImageGalleryItem.module.css';
 import Loaders from '../Loader/Loader';
 import Api from '../Api/Api';
@@ -12,38 +13,24 @@ export default function ImageGalleryItem({
   largeImageURL,
 }) {
   const [gallery, setGallery] = useState([]);
-  // const [error, setError] = useState()
+  const [fetch, setFetch] = useState('q1az');
   const [status, setStatus] = useState('idle');
 
-  // state = {
-  //   gallery: [],
-  //   error: null,
-  //   status: 'idle',
-  // };
-
-  const prevStateStatus = useRef(status);
-  const prevPropsOnFetch = useRef(onFetch);
-  const prevPropsNumberPage = useRef(numberPage);
   useEffect(() => {
     let thisPage = 1;
-
-    if (onFetch === '' && prevStateStatus.current !== status) {
-      console.log('1');
+    if (onFetch === '') {
       setStatus('idle');
       visible(true);
     }
-    if (
-      prevPropsOnFetch.current !== onFetch &&
-      prevPropsNumberPage.current === numberPage
-    ) {
-      console.log('2');
+
+    if (onFetch !== '' && fetch !== onFetch) {
       setGallery([]);
-      // setStatus( 'pending' );
+      setStatus('pending');
       visible(true);
       resPage(true);
-
       Api(onFetch, thisPage)
         .then(e => {
+          console.log(e.hits);
           setGallery(e.hits);
           visible(false);
           if (e.hits.length === 0) {
@@ -54,15 +41,9 @@ export default function ImageGalleryItem({
         })
         .catch(() => setStatus('rejected'));
     }
-    if (
-      prevPropsOnFetch.current === onFetch &&
-      prevPropsNumberPage.current < numberPage
-    ) {
-      console.log('3');
-      thisPage = numberPage;
-      Api(onFetch, thisPage)
+    if ((1 < numberPage && fetch === 'q1az') || fetch === onFetch) {
+      Api(onFetch, numberPage)
         .then(e => {
-          // const { gallery } = this.state;
           setGallery([...gallery, ...e.hits]);
           window.scrollTo({
             top: document.documentElement.scrollHeight,
@@ -76,60 +57,8 @@ export default function ImageGalleryItem({
         })
         .catch(() => setStatus('rejected'));
     }
-  }, [gallery, numberPage, onFetch, resPage, status, visible]);
-
-  // const componentDidUpdate(prevProps, prevState) {
-  // let thisPage = 1;
-
-  // if (this.props.onFetch === '' && prevState.status !== this.state.status) {
-  //   this.setState({ status: 'idle' });
-  //   this.props.visible(true);
-  // }
-  // if (
-  //   prevProps.onFetch !== this.props.onFetch &&
-  //   prevProps.numberPage === this.props.numberPage
-  // ) {
-  //   this.setState({ gallery: [] });
-  //   this.setState({ status: 'pending' });
-  //   this.props.visible(true);
-  //   this.props.resPage(true);
-
-  //   Api(this.props.onFetch, thisPage)
-  //     .then(e => {
-  //       this.setState({ gallery: e.hits });
-  //       this.props.visible(false);
-  //       if (e.hits.length === 0) {
-  //         this.props.visible(true);
-  //         return this.setState({ status: 'rejected' });
-  //       }
-  //       this.setState({ status: 'resolve' });
-  //     })
-  //     .catch(() => this.setState({ status: 'rejected' }));
-  // }
-  // if (
-  //   prevProps.onFetch === this.props.onFetch &&
-  //   prevProps.numberPage < this.props.numberPage
-  // ) {
-  //   thisPage = this.props.numberPage;
-  //   Api(this.props.onFetch, thisPage)
-  //     .then(e => {
-  //       const { gallery } = this.state;
-  //       this.setState({ gallery: [...gallery, ...e.hits] });
-  //       window.scrollTo({
-  //         top: document.documentElement.scrollHeight,
-  //         behavior: 'smooth',
-  //       });
-  //       this.props.visible(false);
-  //       if (e.hits.length === 0) {
-  //         this.props.visible(true);
-  //       }
-  //       this.setState({ status: 'resolve' });
-  //     })
-  //     .catch(() => this.setState({ status: 'rejected' }));
-  // }
-  // }
-
-  // const { status, gallery } = this.state;
+    setFetch(onFetch);
+  }, [onFetch, numberPage]);
 
   if (status === 'idle') {
     return (

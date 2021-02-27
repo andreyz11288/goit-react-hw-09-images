@@ -1,59 +1,56 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import s from './Modal.module.css';
 import img from '../../img/404_error.jpg';
 
-export default class Modal extends Component {
-  static defaultProps = {
-    src: img,
-  };
+export default function Modal({ src }) {
+  const [modal, setModal] = useState(false);
 
-  static propTypes = {
-    src: PropTypes.string,
-  };
-
-  state = {
-    modal: false,
-  };
-
-  componentDidMount() {
-    if (this.props.src !== '') {
-      this.setState({ modal: true });
+  useEffect(() => {
+    if (src !== '') {
+      setModal(true);
     }
     window.addEventListener('keydown', e => {
       if (e.code === 'Escape') {
-        this.setState({ modal: false });
+        setModal(false);
       }
     });
     window.addEventListener('click', e => {
       if (e.target.alt !== 'img') {
-        this.setState({ modal: false });
+        setModal(false);
       }
       if (e.target.alt === 'img') {
-        this.setState({ modal: true });
+        setModal(true);
       }
     });
-  }
-  componentDidUpdate(prevProps, prevState) {
+  }, [src]);
+
+  useEffect(() => {
     window.removeEventListener('keydown', e => {
       if (e.target.alt !== 'img') {
-        this.setState({ modal: false });
+        setModal(false);
       }
       if (e.target.alt === 'img') {
-        this.setState({ modal: true });
+        setModal(true);
       }
     });
-  }
+  }, []);
 
-  render() {
-    return (
-      this.state.modal && (
-        <div className={s.Overlay}>
-          <div className={s.Modal}>
-            <img src={this.props.src} alt="img" />
-          </div>
+  return (
+    modal && (
+      <div className={s.Overlay}>
+        <div className={s.Modal}>
+          <img src={src} alt="img" />
         </div>
-      )
-    );
-  }
+      </div>
+    )
+  );
 }
+
+Modal.defaultProps = {
+  src: img,
+};
+
+Modal.propTypes = {
+  src: PropTypes.string,
+};

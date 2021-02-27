@@ -1,32 +1,28 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import s from './App.module.css';
 import Searchbar from './Components/Searchbar/Searchbar';
 import ImageGallery from './Components/ImageGallery/ImageGallery';
 import Modal from '../src/Components/Modal/Modal';
 
-class App extends Component {
-  state = {
-    search: '',
-    datasrc: '',
+const App = () => {
+  const [search, setSearch] = useState('');
+  const [datasrc, setDatasrc] = useState('');
+
+  const onSubmit = e => {
+    setSearch(e);
   };
 
-  onSubmit = e => {
-    return this.setState({ search: e });
+  const largeImageURL = e => {
+    setDatasrc(e);
   };
 
-  largeImageURL = e => {
-    this.setState({ datasrc: e });
-  };
-
-  render() {
-    return (
-      <div className={s.App}>
-        <Modal src={this.state.datasrc} />
-        <Searchbar onSubmit={this.onSubmit} />
-        <ImageGallery onFetch={this.state.search} src={this.largeImageURL} />
-      </div>
-    );
-  }
-}
+  return (
+    <div className={s.App}>
+      <Modal src={datasrc} />
+      <Searchbar onSubmit={onSubmit} />
+      <ImageGallery onFetch={search} src={largeImageURL} />
+    </div>
+  );
+};
 
 export default App;
