@@ -36,7 +36,6 @@ export default function ImageGalleryItem({
       resPage(true);
       Api(onFetch, 1)
         .then(e => {
-          console.log(e.hits);
           setGallery(e.hits);
           visible(false);
           if (e.hits.length === 0) {

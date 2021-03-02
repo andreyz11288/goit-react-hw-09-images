@@ -21,17 +21,18 @@ export default function Modal({ src }) {
       });
     }
     return () => {
+      window.removeEventListener('keydown', e => {
+        if (e.code === 'Escape') {
+          setModal(false);
+        }
+      });
       window.removeEventListener('click', e => {
         if (e.target.alt !== 'img') {
           setModal(false);
         }
-        if (e.target.alt === 'img') {
-          setModal(true);
-        }
       });
     };
   }, [src]);
-
   return (
     modal && (
       <div className={s.Overlay}>
