@@ -47,7 +47,7 @@ export default function ImageGalleryItem({
         .catch(() => setStatus('rejected'))
         .finally(setFetch(false), setNumber(2));
     }
-  }, [fetch, gallery, onFetch, resPage, visible]);
+  }, [fetch, gallery, numberPage, onFetch, resPage, visible]);
 
   useEffect(() => {
     if (number === numberPage) {
